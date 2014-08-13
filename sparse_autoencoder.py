@@ -141,25 +141,25 @@ def sparse_autoencoder_linear_cost(theta, visible_size, hidden_size,
     # Number of training examples
     m = data.shape[1]
 
-    # Forward propagation
-    z2 = W1.dot(data) + np.tile(b1, (m, 1)).transpose()
-    a2 = sigmoid(z2)
-    z3 = W2.dot(a2) + np.tile(b2, (m, 1)).transpose()
+    # Forward propagation 前向传播
+    z2 = W1.dot(data) + np.tile(b1, (m, 1)).transpose() 
+    a2 = sigmoid(z2)           #隐藏层输出
+    z3 = W2.dot(a2) + np.tile(b2, (m, 1)).transpose()  #输出层
     h = z3
 
-    # Sparsity
-    rho_hat = np.sum(a2, axis=1) / m
-    rho = np.tile(sparsity_param, hidden_size)
+    # Sparsity 稀疏编码计算
+    rho_hat = np.sum(a2, axis=1) / m                #激活度
+    rho = np.tile(sparsity_param, hidden_size)      #稀疏性参数
 
 
-    # Cost function
+    # Cost function  代价函数计算
     cost = np.sum((h - data) ** 2) / (2 * m) + \
            (lambda_ / 2) * (np.sum(W1 ** 2) + np.sum(W2 ** 2)) + \
            beta * np.sum(KL_divergence(rho, rho_hat))
 
 
 
-    # Backprop
+    # Backprop 后向传播
     sparsity_delta = np.tile(- rho / rho_hat + (1 - rho) / (1 - rho_hat), (m, 1)).transpose()
 
     delta3 = -(data - h)
